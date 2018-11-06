@@ -47,7 +47,7 @@ contract DigiStamp{
 
 
 
-    function authenticationRequest (bytes32 _documentUniqueID, bytes32 _authenticatorName ) view returns (bool) {
+    function authenticationRequest (bytes32 _documentUniqueID, bytes32 _authenticatorName ) view public returns (bool) {
 
     require(newAuthenticator.authenticatorName == _authenticatorName);
 
@@ -58,9 +58,9 @@ contract DigiStamp{
             return true; 
 
         }
-return false;
-    }
 
+    }
+return false;
     }
 
 }
