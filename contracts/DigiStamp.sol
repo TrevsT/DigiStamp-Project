@@ -16,12 +16,13 @@ contract Digistamp{
     mapping(address => bytes32) subject;
     mapping(address => Authenticator) authenticator;
     
+   uint docListLength;
+    
     struct Authenticator {
         bytes32  authenticatorName;
-        bytes32[]  documentUniqueIDList;
+        bytes32[]   documentUniqueIDList;
         uint status;
     }
-
 
 
     constructor() public {
@@ -31,18 +32,15 @@ contract Digistamp{
         each time a new Authenticator and Requestor is created*/
         requestor[msg.sender] = "Some Employer";
         
-         
         authenticator[0].authenticatorName = "DHA" ;
-        authenticator[0].documentUniqueIDList  = 
+      
+        authenticator[0].documentUniqueIDList.push("test1");
+        authenticator[0].documentUniqueIDList.push("test2");
+        authenticator[0].documentUniqueIDList.push("test3");
+        docListLength = authenticator[0].documentUniqueIDList.push("test4");
+        
 
-        [bytes32(0x6473646b33333966000000000000000000000000000000000000000000000000), 
 
-         bytes32(0x686a643774346a66300000000000000000000000000000000000000000000000), 
-
-         bytes32(0x6c38383866686a34000000000000000000000000000000000000000000000000), 
-
-         bytes32(0x6173733431337363640000000000000000000000000000000000000000000000)]; 
-         
         authenticator[0].status = 1; 
     }
 
@@ -51,12 +49,14 @@ contract Digistamp{
 
     function authenticationRequest (bytes32 _documentUniqueID, bytes32 _authenticatorName ) public view returns (bool) {
         require(authenticator[0].authenticatorName == _authenticatorName);
-        for(uint i = 0; i < authenticator[0].documentUniqueIDList.length; i++){
+        for(uint i = 0; i < docListLength; ++i){
         if(authenticator[0].documentUniqueIDList[i] == _documentUniqueID){
             return true; 
         }
-return false;
         }
+        return false;
     }
 }
+
+
 
