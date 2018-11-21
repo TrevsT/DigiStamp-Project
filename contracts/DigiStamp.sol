@@ -51,41 +51,49 @@ contract Digistamp{
         subject[0x0be885dd7317e4ce779435244acf2f68286ca8e2].status = 1;
     }
     
+event AddSubject(address _subjectAddress, bytes32 _firstName,  bytes32 _lastName, bytes32 indexed _idNumber) ;
+event AddAuthenticator(address _authenticatorAddress, bytes32 _authenticatorName);
+event AddDocument(address _authenticatorAddress, bytes32 _documentID,  bytes32 _authenticatorName);
+event AuthenticationRequest(address _authenticatorAddress, address _subjectAddress, bytes32 _documentID, bytes32 _authenticatorName);
 
-function addSubject (address _subjectAddress, bytes32 _firstName,  bytes32 _lastName, bytes32 _idNumber, bytes32 _password) public returns (bytes32 _passwordConfirmation) { 
+function addSubject (address _subjectAddress, bytes32 _firstName,  bytes32 _lastName, bytes32 _idNumber, bytes32 _password) public { 
         subject[_subjectAddress].status = 1; 
         subject[_subjectAddress].firstName = _firstName; 
         subject[_subjectAddress].lastName = _lastName; 
         subject[_subjectAddress].idNumber = _idNumber; 
-        return subject[_subjectAddress].password= _password; //Just outputto test and check function was executed properly
+        subject[_subjectAddress].password= _password;
+        emit AddSubject(_subjectAddress, _firstName,_lastName, _idNumber);
 } 
 
 
-function addAuthenticator(address _authenticatorAddress, bytes32 _authenticatorName) public returns (bytes32 authenticatorName) { 
+function addAuthenticator(address _authenticatorAddress, bytes32 _authenticatorName) public { 
         authenticator[_authenticatorAddress].status = 1; 
-        return authenticator[_authenticatorAddress].authenticatorName = _authenticatorName ;
+        authenticator[_authenticatorAddress].authenticatorName = _authenticatorName ;
+        emit AddAuthenticator(_authenticatorAddress, _authenticatorName);
 } 
 
         
 function addDocument(address _authenticatorAddress, bytes32 _documentID,  bytes32 _authenticatorName) public returns (uint _docListLength) { 
         require(authenticator[_authenticatorAddress].authenticatorName == _authenticatorName);
         uint docListLength;
+        emit AddDocument(_authenticatorAddress,_documentID, _authenticatorName);
         return  docListLength = authenticator[_authenticatorAddress].documentIDList.push(_documentID);
 } 
 
-    function authenticationRequest (address _authenticatorAddress, address _subjectAddress, bytes32 _subjectPassword, bytes32 _documentID, bytes32 _authenticatorName) public view returns (bool) {
+    function authenticationRequest (address _authenticatorAddress, address _subjectAddress, bytes32 _subjectPassword, bytes32 _documentID, bytes32 _authenticatorName) public returns (bool) {
         require(authenticator[_authenticatorAddress].authenticatorName == _authenticatorName);
         require(subject[_subjectAddress].password ==_subjectPassword); 
       
         for(uint i = 0; i < authenticator[_authenticatorAddress].documentIDList.length; ++i){
         if(authenticator[_authenticatorAddress].documentIDList[i] == _documentID){
+        emit AuthenticationRequest( _authenticatorAddress,  _subjectAddress,  _documentID,  _authenticatorName);
             return true; 
+        
         }
         }
         return false;
     }
 }
-
 
 
 
