@@ -80,7 +80,9 @@ function addDocument(address _authenticatorAddress, bytes32 _documentID,  bytes3
         return  docListLength = authenticator[_authenticatorAddress].documentIDList.push(_documentID);
 } 
 
-    function authenticationRequest (address _authenticatorAddress, address _subjectAddress, bytes32 _subjectPassword, bytes32 _documentID, bytes32 _authenticatorName) public returns (bool) {
+    function authenticationRequest (address _authenticatorAddress, bytes32 _authenticatorSignature,uint8 _v, bytes32 _r, bytes32 _s, address _subjectAddress, bytes32 _subjectPassword, bytes32 _documentID, bytes32 _authenticatorName) public returns (bool) {
+        
+        require(checkSignature(_authenticatorAddress, _authenticatorSignature,  _v,  _r,  _s) == true);
         require(authenticator[_authenticatorAddress].authenticatorName == _authenticatorName);
         require(subject[_subjectAddress].password ==_subjectPassword); 
       
@@ -93,6 +95,12 @@ function addDocument(address _authenticatorAddress, bytes32 _documentID,  bytes3
         }
         return false;
     }
+    
+    function checkSignature(address _addres, bytes32 msgHash, uint8 v, bytes32 r, bytes32 s) public pure returns (bool){
+        return ecrecover(msgHash, v, r, s) == _addres;
+    } 
+    
+    
 }
 
 
