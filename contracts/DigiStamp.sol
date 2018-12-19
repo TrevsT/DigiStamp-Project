@@ -82,7 +82,7 @@ function addDocument(address _authenticatorAddress, bytes32 _documentID,  bytes3
 
     function authenticationRequest (address _authenticatorAddress, bytes32 _authenticatorSignature,uint8 _v, bytes32 _r, bytes32 _s, address _subjectAddress, bytes32 _subjectPassword, bytes32 _documentID, bytes32 _authenticatorName) public returns (bool) {
         
-        require(checkSignature(_authenticatorAddress, _authenticatorSignature,  _v,  _r,  _s) == true);
+        require(checkSignature(_authenticatorAddress, _authenticatorSignature) == true);
         require(authenticator[_authenticatorAddress].authenticatorName == _authenticatorName);
         require(subject[_subjectAddress].password ==_subjectPassword); 
       
@@ -96,11 +96,28 @@ function addDocument(address _authenticatorAddress, bytes32 _documentID,  bytes3
         return false;
     }
     
-    function checkSignature(address _addres, bytes32 msgHash, uint8 v, bytes32 r, bytes32 s) public pure returns (bool){
-        return ecrecover(msgHash, v, r, s) == _addres;
+    function checkSignature(address _addres, bytes32 signature) internal pure returns (bool){
+          
+        require(signature.length == 65);
+          
+        bytes32 r;
+        bytes32 s;
+        uint8 v;
+         
+          assembly {
+        // first 32 bytes, after the length prefix
+        r := mload(add(signature, 32))
+        // second 32 bytes
+        s := mload(add(signature, 64))
+        // final byte (first byte of the next 32 bytes)
+        v := byte(0, mload(add(signature, 96)))
+    }
+
+        
+        return ecrecover(signature, v, r, s) == _addres;
     } 
     
-    
+
 }
 
 
